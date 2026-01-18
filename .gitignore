@@ -22,3 +22,12 @@ mlruns/
 *.bin
 *.b
 Anaconda*.sh*
+*.db
+*.bin
+*.pkl
+*.h5
+*.pth
+mlruns/
+mlflow.db
+models/*.bin
+models/*.pkl
