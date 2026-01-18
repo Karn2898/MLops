@@ -31,3 +31,4 @@ mlruns/
 mlflow.db
 models/*.bin
 models/*.pkl
+mlartifacts/
