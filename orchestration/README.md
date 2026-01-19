@@ -28,8 +28,27 @@ python scheduled_workflow.py
 
 4. Backfill historical data
 
+# Install
+pip install prefect python-dateutil
 
-5. Start Prefect UI
+# Test hello world
+python test_prefect.py
+
+# Run orchestrated workflow
+python orchestrate_ml.py
+
+# Create scheduled deployment
+python scheduled_workflow.py
+
+# Backfill historical data
+python backfill.py
+
+# Start Prefect UI
 prefect server start
+
+
+6. Start Prefect UI
+prefect server start
+
 
 
