@@ -1,0 +1,39 @@
+# Prefect Cloud Deployment Configuration
+# This file defines deployments for your Prefect flows
+
+build: []
+push: []
+
+deployments:
+  - name: monthly-training
+    description: Monthly training pipeline for NYC taxi data
+    entrypoint: workflow.py:monthly_training_flow
+    parameters:
+      run_date: "2026-01-19T00:00:00"
+    schedule:
+      cron: "0 0 1 * *"  # Run at midnight on the 1st of each month
+    work_pool:
+      name: process-work-pool
+      work_queue_name: default
+    
+  - name: backfill-training
+    description: Backfill training for historical data
+    entrypoint: backfilling.py:backfill_training
+    parameters:
+      start_year: 2021
+      start_month: 1
+      end_year: 2021
+      end_month: 12
+    work_pool:
+      name: process-work-pool
+      work_queue_name: default
+
+  - name: hello-world
+    description: Simple hello world test flow
+    entrypoint: test.py:hello_world_flow
+    parameters:
+      name: MLOps
+    work_pool:
+      name: process-work-pool
+      work_queue_name: default
+
