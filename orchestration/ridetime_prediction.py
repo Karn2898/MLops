@@ -3,10 +3,10 @@ import pickle
 import xgboost as xgb
 from pathlib import Path
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.metrics import root_mean_squared_error
+from sklearn.metrics import mean_squared_error
 
 import mlflow
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri("file:./mlruns")
 mlflow.set_experiment("nyc-taxi-experiment")
 
 import os
@@ -41,8 +41,8 @@ def create_X(df, dv=None):
     return X, dv
 
 def train_model(X_train , y_train , X_val , y_val, dv):
-    with mlflow.start_run():
-        run_id = mlflow.current_run().info.run_id
+    with mlflow.start_run() as run:
+        run_id = run.info.run_id
         train = xgb.DMatrix(X_train, label=y_train)
         valid = xgb.DMatrix(X_val, label=y_val)
 
@@ -67,9 +67,10 @@ def train_model(X_train , y_train , X_val , y_val, dv):
         )
 
         y_pred = booster.predict(valid)
-        rmse = root_mean_squared_error(y_val, y_pred)
+        rmse = mean_squared_error(y_val, y_pred, squared=False)
         mlflow.log_metric("rmse", rmse)
 
+        os.makedirs("models", exist_ok=True)
         with open("models/preprocessor.b", "wb") as f_out:
             pickle.dump(dv, f_out)
         mlflow.log_artifact("models/preprocessor.b", artifact_path="preprocessor")
@@ -98,10 +99,15 @@ def run(year, month):
 if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Train a model to predict taxi trip duration')
+    parser.add_argument('--train', action='store_true', help='train the model')
     parser.add_argument('--year', type=int, default=2021, required=True, help='year of the data to train on')
     parser.add_argument('--month', type=int, default=1, required=True, help='month of the data to train on')
     args = parser.parse_args()
-    run_id = run(year=args.year, month=args.month)
+    if args.train:
+        run_id = run(year=args.year, month=args.month)
+    else:
+        parser.print_help()
+        exit()
 
     with open("models/run_id.txt", "w") as f:
         f.write(run_id)
