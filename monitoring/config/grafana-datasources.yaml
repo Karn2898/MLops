@@ -1,0 +1,11 @@
+apiversion:1
+datasources:
+-name:postgreSQL
+type:postgreSQLaccess: proxy
+url: db.:5432
+database: cool
+user:postgreSQL
+securejsondata:
+password: 'abcd@123'
+jsondata: 
+sslmode: 'disable'
